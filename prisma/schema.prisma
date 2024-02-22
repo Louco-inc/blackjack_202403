@@ -1,0 +1,58 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = "file:./dev.db"
+}
+
+model Player {
+  id        Int      @id @default(autoincrement())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  nickname String
+  point Int
+  uuid String
+  histories History[]
+}
+
+model History {
+  id        Int      @id @default(autoincrement())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  matchDay DateTime
+  result String
+  increasePoint Int
+  decreasePoint Int
+  player Player @relation(fields: [playerId], references: [id])
+  playerId Int
+  playerHandCards PlayerHandCard[] @relation(name: "PlayerHandCards")
+  dealerHandCards DealerHandCard[] @relation(name: "DealerHandCards")
+}
+
+model PlayerHandCard {
+  id        Int      @id @default(autoincrement())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  playerHistory History @relation(name: "PlayerHandCards", fields: [playerHistoryId], references: [id])
+  playerHistoryId Int
+  imageId String
+  cardNumber Int
+}
+
+model DealerHandCard {
+  id        Int      @id @default(autoincrement())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  dealerHistory History @relation(name: "DealerHandCards", fields: [dealerHistoryId], references: [id])
+  dealerHistoryId Int
+  imageId String
+  cardNumber Int
+}

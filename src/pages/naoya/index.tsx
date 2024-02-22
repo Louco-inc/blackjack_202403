@@ -5,15 +5,27 @@
 // リザルト
 // 履歴
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Header from "../components/header";
-import TopComponent from "./top";
-import NickNameComponent from "./nickname";
-import BettingComponent from "./betting";
+import TopComponent from "./phase/top";
+import NickNameComponent from "./phase/nickname";
+import BettingComponent from "./phase/betting";
+import GameComponent from "./phase/game";
+import { v4 as uuidv4 } from "uuid";
 
 export default function BlackJackPage(): JSX.Element {
   const [phase, setPhase] = useState<number>(0);
   const [prevPhase, setPrevPhase] = useState<number>(0);
+
+  useEffect(() => {
+    // セッションからsessionIDを取得
+    // リクエストヘッダーに入れてリクエストを飛ばす
+    // prisma側でsessionがあればそれに対応する
+    // ポイント数、ニックネームをDBから取得してstateに保持
+    // sessionがなければuuidを発行してポイント初期値ニックネームを空文字で返す
+    const uniqueId = uuidv4();
+    console.log("A unique ID:", uniqueId);
+  }, []);
 
   const openHowToPlay = (): void => {};
   const openHistory = (): void => {};
@@ -26,19 +38,19 @@ export default function BlackJackPage(): JSX.Element {
         break;
       }
       case "nickname-next": {
-				goNext();
+        goNext();
         break;
       }
       case "betting-next": {
-				goNext();
+        goNext();
         break;
       }
       case "game-next": {
-				goNext();
+        goNext();
         break;
       }
       case "result": {
-				goNext();
+        goNext();
         break;
       }
     }
@@ -51,9 +63,9 @@ export default function BlackJackPage(): JSX.Element {
 
   const goBack = (): void => {
     setPhase((prev) => prev - 1);
-		if (prevPhase > 0) {
-			setPrevPhase((prev) => prev - 1);
-		}
+    if (prevPhase > 0) {
+      setPrevPhase((prev) => prev - 1);
+    }
   };
 
   return (
@@ -85,6 +97,7 @@ export default function BlackJackPage(): JSX.Element {
         ) : (
           <></>
         )}
+        {phase === 3 ? <GameComponent /> : <></>}
       </div>
     </>
   );
