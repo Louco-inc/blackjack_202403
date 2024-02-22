@@ -9,23 +9,51 @@ import { useState } from "react";
 import Header from "../components/header";
 import TopComponent from "./top";
 import NickNameComponent from "./nickname";
+import BettingComponent from "./betting";
 
 export default function BlackJackPage(): JSX.Element {
   const [phase, setPhase] = useState<number>(0);
   const [prevPhase, setPrevPhase] = useState<number>(0);
 
-  const handleStart = (): void => {
-    // ニックネーム画面に飛ばすかベット画面に飛ばすか
-  };
-
   const openHowToPlay = (): void => {};
   const openHistory = (): void => {};
 
-  const switchPage = (type: string): void => {};
+  const switchPage = (type: string): void => {
+    switch (type) {
+      case "top-next": {
+        // ニックネーム画面に飛ばすかベット画面に飛ばすか
+        goNext();
+        break;
+      }
+      case "nickname-next": {
+				goNext();
+        break;
+      }
+      case "betting-next": {
+				goNext();
+        break;
+      }
+      case "game-next": {
+				goNext();
+        break;
+      }
+      case "result": {
+				goNext();
+        break;
+      }
+    }
+  };
+
+  const goNext = (): void => {
+    setPhase((prev) => prev + 1);
+    setPrevPhase((prev) => prev + 1);
+  };
 
   const goBack = (): void => {
     setPhase((prev) => prev - 1);
-    setPrevPhase((prev) => prev - 1);
+		if (prevPhase > 0) {
+			setPrevPhase((prev) => prev - 1);
+		}
   };
 
   return (
@@ -34,7 +62,7 @@ export default function BlackJackPage(): JSX.Element {
       <div className="h-screen bg-main-color text-white px-8">
         {phase === 0 ? (
           <TopComponent
-            onStart={handleStart}
+            onStart={() => switchPage("top-next")}
             openHowToPlay={openHowToPlay}
             openHistory={openHistory}
           />
@@ -43,15 +71,15 @@ export default function BlackJackPage(): JSX.Element {
         )}
         {phase === 1 ? (
           <NickNameComponent
-            goNext={() => switchPage("betting")}
+            goNext={() => switchPage("nickname-next")}
             goBack={goBack}
           />
         ) : (
           <></>
         )}
-				{phase === 2 ? (
+        {phase === 2 ? (
           <BettingComponent
-            goNext={() => switchPage("betting")}
+            goNext={() => switchPage("betting-next")}
             goBack={goBack}
           />
         ) : (
