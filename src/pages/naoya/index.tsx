@@ -23,9 +23,18 @@ export default function BlackJackPage(): JSX.Element {
     // prisma側でsessionがあればそれに対応する
     // ポイント数、ニックネームをDBから取得してstateに保持
     // sessionがなければuuidを発行してポイント初期値ニックネームを空文字で返す
-    const uniqueId = uuidv4();
-    console.log("A unique ID:", uniqueId);
+    init();
   }, []);
+
+  const init = async (): Promise<void> => {
+    const headers = new Headers();
+    headers.append("Authorization", uuidv4());
+    const res = await fetch("/api/player", {
+      method: "GET",
+      headers,
+    }).then(async (r) => await r.json());
+    console.log(res);
+  };
 
   const openHowToPlay = (): void => {};
   const openHistory = (): void => {};
