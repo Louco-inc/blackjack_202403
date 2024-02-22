@@ -45,7 +45,7 @@ export default function TopComponent(props: PropsType): JSX.Element {
             color="#ffffff"
             size="lg"
             variant="ghost"
-            onClick={openHistory}
+            onClick={() => openHistory("history")}
           >
             戦績
           </Button>
