@@ -17,6 +17,7 @@ type PropsType = {
   inputType: InputType;
   confirm: (inputValue: InputStateType) => void;
   goBack: () => void;
+	validate?: (value: InputStateType) => boolean;
 };
 
 const createDefaultValue = (inputType: InputType): InputStateType => {
@@ -35,16 +36,26 @@ export default function BettingComponent({
   label,
   errorMessage,
   confirmButtonLabel,
+	validate,
   inputType,
 }: PropsType): JSX.Element {
   const [value, setValue] = useState<InputStateType>(
     createDefaultValue(inputType)
   );
+  const [isError, setIsError] = useState<boolean>(false);
+
+  const emit = (): void => {
+		if (validate && validate(value)) {
+			confirm(value)
+			return;
+		}
+		setIsError(true);
+  };
 
   return (
     <>
       <div className="pt-8">
-        <FormControl className="mt-4">
+        <FormControl className="mt-4" isInvalid={isError}>
           <FormLabel>{label}</FormLabel>
           <Input
             type="text"
@@ -67,7 +78,7 @@ export default function BettingComponent({
             color="#ffffff"
             size="lg"
             variant="outline"
-            onClick={() => confirm(value)}
+            onClick={emit}
           >
             {confirmButtonLabel}
           </Button>

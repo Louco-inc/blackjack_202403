@@ -1,10 +1,3 @@
-// TOP
-// ニックネーム
-// ベット
-// ゲーム
-// リザルト
-// 履歴
-
 import { useState } from "react";
 import Header from "../../components/header";
 import TopComponent from "./phase/top";
@@ -99,10 +92,25 @@ export default function BlackJackPage(): JSX.Element {
     }
   };
 
+  const validateNickName = (value: InputStateType): boolean => {
+    if (typeof value !== "string") {
+      return false;
+    }
+    return value.length > 0 && value.length < 20;
+  };
+
+  const validateBettingValue = (value: InputStateType): boolean => {
+    if (typeof value !== "number") {
+      return false;
+    }
+		return value > 100 && playerData.point > value;
+  };
+
   const confirmNickName = async (value: InputStateType): Promise<void> => {
     if (typeof value !== "string") {
       return;
     }
+		// ユーザーデータを登録する
     await switchPage("nickname-next");
   };
 
@@ -132,6 +140,7 @@ export default function BlackJackPage(): JSX.Element {
             errorMessage="ニックネームは1文字以上20文字以下で入力してください"
             inputType="string"
             confirmButtonLabel="次へ"
+            validate={(value) => validateNickName(value)}
             confirm={async (val) => await confirmNickName(val)}
             goBack={goBack}
           />
@@ -144,6 +153,7 @@ export default function BlackJackPage(): JSX.Element {
             errorMessage="ベット数は100以上の数字を入力してください"
             confirmButtonLabel="確定"
             inputType="number"
+            validate={(value) => validateBettingValue(value)}
             confirm={async (val) => await confirmBettingValue(val)}
             goBack={goBack}
           />
