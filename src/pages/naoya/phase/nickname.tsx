@@ -18,7 +18,7 @@ export default function NickNameComponent(props: PropsType): JSX.Element {
 
   return (
     <>
-      <div>
+      <div className="pt-8">
         <FormControl className="mt-4">
           <FormLabel>ニックネーム</FormLabel>
           <Input

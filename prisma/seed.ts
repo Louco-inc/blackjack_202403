@@ -8,7 +8,7 @@ async function main(): Promise<void> {
     data: {
       nickname: "Yamada Taro",
       point: 1000,
-      uuid: "-100",
+      uuid: "0819ae52-f809-4fcb-a0f2-07150d0ec3b3",
       histories: {
         create: [],
       },

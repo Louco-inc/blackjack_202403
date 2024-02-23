@@ -18,7 +18,7 @@ export default function BettingComponent(props: PropsType): JSX.Element {
 
   return (
     <>
-      <div>
+      <div className="pt-8">
         <FormControl className="mt-4">
           <FormLabel>ベット数</FormLabel>
           <Input

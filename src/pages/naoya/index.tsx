@@ -5,45 +5,63 @@
 // リザルト
 // 履歴
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import Header from "../components/header";
 import TopComponent from "./phase/top";
 import NickNameComponent from "./phase/nickname";
 import BettingComponent from "./phase/betting";
 import GameComponent from "./phase/game";
-import { v4 as uuidv4 } from "uuid";
+import {
+  getUUIDFromSessionStorage,
+  saveUUIDToSessionStorage,
+} from "../../lib/SessionStorage";
+
+type PlayerType = {
+  nickname: string;
+  uuid: string;
+  point: number;
+};
 
 export default function BlackJackPage(): JSX.Element {
   const [phase, setPhase] = useState<number>(0);
   const [prevPhase, setPrevPhase] = useState<number>(0);
-
-  useEffect(() => {
-    // セッションからsessionIDを取得
-    // リクエストヘッダーに入れてリクエストを飛ばす
-    // prisma側でsessionがあればそれに対応する
-    // ポイント数、ニックネームをDBから取得してstateに保持
-    // sessionがなければuuidを発行してポイント初期値ニックネームを空文字で返す
-    init();
-  }, []);
-
-  const init = async (): Promise<void> => {
-    const headers = new Headers();
-    headers.append("Authorization", uuidv4());
-    const res = await fetch("/api/player", {
-      method: "GET",
-      headers,
-    }).then(async (r) => await r.json());
-    console.log(res);
-  };
+  const [playerData, setPlayerData] = useState<PlayerType>({
+    nickname: "",
+    uuid: "",
+    point: 0,
+  });
 
   const openHowToPlay = (): void => {};
   const openHistory = (): void => {};
 
-  const switchPage = (type: string): void => {
+  const switchPage = async (type: string): Promise<void> => {
     switch (type) {
       case "top-next": {
         // ニックネーム画面に飛ばすかベット画面に飛ばすか
-        goNext();
+        const uuid: string = getUUIDFromSessionStorage() ?? "";
+        console.log(uuid);
+        // uuidがあればプレイヤーを取得してskip
+        if (uuid) {
+          const headers = new Headers();
+          headers.append("Authorization", uuid);
+          const res: PlayerType = await fetch("/api/player", {
+            method: "GET",
+            headers,
+          }).then(async (r) => await r.json());
+
+          // プレイヤーデータをstateに保持
+          setPlayerData(res);
+
+          // セッションストレージに保持
+          const recentUuid: string = res.uuid;
+          saveUUIDToSessionStorage(recentUuid);
+
+          // ベット画面へ
+          skipPage(2);
+        } else {
+          // uuidがなければnickname画面へ
+          goNext();
+        }
         break;
       }
       case "nickname-next": {
@@ -65,13 +83,17 @@ export default function BlackJackPage(): JSX.Element {
     }
   };
 
+  const skipPage = (num: number): void => {
+    setPhase(num);
+  };
+
   const goNext = (): void => {
     setPhase((prev) => prev + 1);
     setPrevPhase((prev) => prev + 1);
   };
 
   const goBack = (): void => {
-    setPhase((prev) => prev - 1);
+    setPhase(prevPhase);
     if (prevPhase > 0) {
       setPrevPhase((prev) => prev - 1);
     }
@@ -83,7 +105,7 @@ export default function BlackJackPage(): JSX.Element {
       <div className="h-screen bg-main-color text-white px-8">
         {phase === 0 ? (
           <TopComponent
-            onStart={() => switchPage("top-next")}
+            onStart={async () => await switchPage("top-next")}
             openHowToPlay={openHowToPlay}
             openHistory={openHistory}
           />
@@ -92,7 +114,7 @@ export default function BlackJackPage(): JSX.Element {
         )}
         {phase === 1 ? (
           <NickNameComponent
-            goNext={() => switchPage("nickname-next")}
+            goNext={async () => await switchPage("nickname-next")}
             goBack={goBack}
           />
         ) : (
@@ -100,7 +122,7 @@ export default function BlackJackPage(): JSX.Element {
         )}
         {phase === 2 ? (
           <BettingComponent
-            goNext={() => switchPage("betting-next")}
+            goNext={async () => await switchPage("betting-next")}
             goBack={goBack}
           />
         ) : (
