@@ -7,31 +7,21 @@ import {
   saveUUIDToSessionStorage,
 } from "../../lib/SessionStorage";
 import InputForm from "../../components/InputForm";
-import { InputStateType } from "../../types";
-
-type PlayerType = {
-  nickname: string;
-  uuid: string;
-  point: number;
-};
+import { InputStateType, PlayerType } from "../../types";
 
 export default function BlackJackPage(): JSX.Element {
-  const [phase, setPhase] = useState<number>(0);
+  const [phase, setPhase] = useState<number>(3);
   const [prevPhase, setPrevPhase] = useState<number>(0);
   const [playerData, setPlayerData] = useState<PlayerType>({
     nickname: "",
     uuid: "",
     point: -100,
   });
-  const [bettingValue, setBettingValue] = useState<number | undefined>(
-    undefined
-  );
+  const [bettingPoint, setBettingPoint] = useState<number>(0);
 
   useEffect(() => {
     const init = async (): Promise<void> => {
       const uuid: string = getUUIDFromSessionStorage() ?? "";
-      console.log(uuid);
-      // uuidがあればプレイヤーを取得してskip
       if (uuid) {
         const headers = new Headers();
         headers.append("Authorization", uuid);
@@ -39,11 +29,7 @@ export default function BlackJackPage(): JSX.Element {
           method: "GET",
           headers,
         }).then(async (r) => await r.json());
-
-        // プレイヤーデータをstateに保持
         setPlayerData(res);
-
-        // セッションストレージに保持
         const recentUuid: string = res.uuid;
         saveUUIDToSessionStorage(recentUuid);
       }
@@ -57,9 +43,7 @@ export default function BlackJackPage(): JSX.Element {
   const switchPage = async (type: string): Promise<void> => {
     switch (type) {
       case "top-next": {
-        // ニックネーム画面に飛ばすかベット画面に飛ばすか
-        // uuidがあればプレイヤーを取得してskip
-				// uuidがなければnickname画面へ
+        // uuidがあればプレイヤーを取得してskip uuidがなければnickname画面へ
         if (playerData.uuid) {
           skipPage(2);
         } else {
@@ -135,7 +119,7 @@ export default function BlackJackPage(): JSX.Element {
     if (typeof value !== "number") {
       return;
     }
-    setBettingValue(value);
+    setBettingPoint(value);
     await switchPage("betting-next");
   };
 
@@ -179,7 +163,11 @@ export default function BlackJackPage(): JSX.Element {
         ) : (
           <></>
         )}
-        {phase === 3 ? <GameComponent /> : <></>}
+        {phase === 3 ? (
+          <GameComponent playerData={playerData} bettingPoint={bettingPoint} />
+        ) : (
+          <></>
+        )}
       </div>
     </>
   );
