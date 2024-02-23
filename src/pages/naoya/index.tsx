@@ -103,14 +103,21 @@ export default function BlackJackPage(): JSX.Element {
     if (typeof value !== "number") {
       return false;
     }
-		return value > 100 && playerData.point > value;
+    return value >= 100 && playerData.point > value;
   };
 
   const confirmNickName = async (value: InputStateType): Promise<void> => {
     if (typeof value !== "string") {
       return;
     }
-		// ユーザーデータを登録する
+    const params = { nickname: value };
+    const res: PlayerType = await fetch("/api/player", {
+      method: "POST",
+      body: JSON.stringify(params),
+    }).then(async (r) => await r.json());
+    setPlayerData(res);
+    const recentUuid: string = res.uuid;
+    saveUUIDToSessionStorage(recentUuid);
     await switchPage("nickname-next");
   };
 

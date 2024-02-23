@@ -7,14 +7,29 @@ export default async function handler(
   res: NextApiResponse
 ): Promise<void> {
   if (req.method === "GET") {
-		const uuid = req.headers.authorization;
+    const uuid = req.headers.authorization;
     const player = await db.player.findMany({
       where: {
         uuid,
       },
     });
     const response =
-      player.length > 0 ? player[0] : { uuid: uuidv4(), point: 1000 };
+      player.length > 0 ? player[0] : { uuid: "", point: 0, nickname: "" };
     res.status(200).json(response);
+  } else if (req.method === "POST") {
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+    const body = JSON.parse(req.body);
+    const { nickname } = body;
+    const player = await db.player.create({
+      data: {
+        nickname,
+        point: 1000,
+        uuid: uuidv4(),
+        histories: {
+          create: [],
+        },
+      },
+    });
+    res.status(200).json(player);
   }
 }
