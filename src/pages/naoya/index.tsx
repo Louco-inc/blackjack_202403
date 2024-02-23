@@ -126,7 +126,7 @@ export default function BlackJackPage(): JSX.Element {
   return (
     <>
       <Header />
-      <div className="h-screen bg-main-color text-white px-8">
+      <div className={`h-[calc(100vh-48px)] bg-main-color text-white px-8`}>
         {phase === 0 ? (
           <TopComponent
             playerPoint={playerData.point}

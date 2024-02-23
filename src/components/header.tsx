@@ -11,6 +11,7 @@ export default function Header(): JSX.Element {
     className: string;
     color: string;
     borderColor: string;
+    size: string;
   } => {
     const pathname = router.pathname;
     const baseClassName = "mr-4";
@@ -20,13 +21,15 @@ export default function Header(): JSX.Element {
         className: baseClassName,
         color: "",
         borderColor: "",
+        size: "sm",
       };
     } else {
       return {
         variant: "outline",
-        className: baseClassName + " " + "buttonNonActiveColor",
+        className: baseClassName + " buttonNonActiveColor",
         color: "buttonNonActiveColor",
         borderColor: "buttonNonActiveColor",
+        size: "sm",
       };
     }
   };
@@ -43,7 +46,7 @@ export default function Header(): JSX.Element {
 
   return (
     <div className="px-8 py-2 bg-header-color">
-      <div className="my-4 flex justify-between">
+      <div className="flex justify-between">
         <h2 className="text-white font-bold text-2xl mr-4">BlackJack</h2>
         <div>
           <Button

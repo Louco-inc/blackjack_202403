@@ -4,3 +4,9 @@ export type PlayerType = {
   uuid: string;
   point: number;
 };
+export type SuitType = "club" | "diamond" | "heart" | "spade";
+export type CardType = {
+  suit: SuitType;
+  rank: string;
+  imageId: string;
+};
