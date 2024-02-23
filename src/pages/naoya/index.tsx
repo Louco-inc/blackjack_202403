@@ -6,15 +6,15 @@
 // 履歴
 
 import { useState } from "react";
-import Header from "../components/header";
+import Header from "../../components/header";
 import TopComponent from "./phase/top";
-import NickNameComponent from "./phase/nickname";
-import BettingComponent from "./phase/betting";
 import GameComponent from "./phase/game";
 import {
   getUUIDFromSessionStorage,
   saveUUIDToSessionStorage,
 } from "../../lib/SessionStorage";
+import InputForm from "../../components/InputForm";
+import { InputStateType } from "../../types";
 
 type PlayerType = {
   nickname: string;
@@ -99,6 +99,20 @@ export default function BlackJackPage(): JSX.Element {
     }
   };
 
+  const confirmNickName = async (value: InputStateType): Promise<void> => {
+    if (typeof value !== "string") {
+      return;
+    }
+    await switchPage("nickname-next");
+  };
+
+  const confirmBettingValue = async (value: InputStateType): Promise<void> => {
+    if (typeof value !== "number") {
+      return;
+    }
+    await switchPage("betting-next");
+  };
+
   return (
     <>
       <Header />
@@ -113,16 +127,24 @@ export default function BlackJackPage(): JSX.Element {
           <></>
         )}
         {phase === 1 ? (
-          <NickNameComponent
-            goNext={async () => await switchPage("nickname-next")}
+          <InputForm
+            label="ニックネーム"
+            errorMessage="ニックネームは1文字以上20文字以下で入力してください"
+            inputType="string"
+            confirmButtonLabel="次へ"
+            confirm={async (val) => await confirmNickName(val)}
             goBack={goBack}
           />
         ) : (
           <></>
         )}
         {phase === 2 ? (
-          <BettingComponent
-            goNext={async () => await switchPage("betting-next")}
+          <InputForm
+            label="ベット数"
+            errorMessage="ベット数は100以上の数字を入力してください"
+            confirmButtonLabel="確定"
+            inputType="number"
+            confirm={async (val) => await confirmBettingValue(val)}
             goBack={goBack}
           />
         ) : (
