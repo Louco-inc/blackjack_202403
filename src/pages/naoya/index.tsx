@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Header from "../../components/header";
 import TopComponent from "./phase/top";
 import GameComponent from "./phase/game";
@@ -21,8 +21,35 @@ export default function BlackJackPage(): JSX.Element {
   const [playerData, setPlayerData] = useState<PlayerType>({
     nickname: "",
     uuid: "",
-    point: 0,
+    point: -100,
   });
+  const [bettingValue, setBettingValue] = useState<number | undefined>(
+    undefined
+  );
+
+  useEffect(() => {
+    const init = async (): Promise<void> => {
+      const uuid: string = getUUIDFromSessionStorage() ?? "";
+      console.log(uuid);
+      // uuidがあればプレイヤーを取得してskip
+      if (uuid) {
+        const headers = new Headers();
+        headers.append("Authorization", uuid);
+        const res: PlayerType = await fetch("/api/player", {
+          method: "GET",
+          headers,
+        }).then(async (r) => await r.json());
+
+        // プレイヤーデータをstateに保持
+        setPlayerData(res);
+
+        // セッションストレージに保持
+        const recentUuid: string = res.uuid;
+        saveUUIDToSessionStorage(recentUuid);
+      }
+    };
+    init();
+  }, []);
 
   const openHowToPlay = (): void => {};
   const openHistory = (): void => {};
@@ -31,28 +58,11 @@ export default function BlackJackPage(): JSX.Element {
     switch (type) {
       case "top-next": {
         // ニックネーム画面に飛ばすかベット画面に飛ばすか
-        const uuid: string = getUUIDFromSessionStorage() ?? "";
-        console.log(uuid);
         // uuidがあればプレイヤーを取得してskip
-        if (uuid) {
-          const headers = new Headers();
-          headers.append("Authorization", uuid);
-          const res: PlayerType = await fetch("/api/player", {
-            method: "GET",
-            headers,
-          }).then(async (r) => await r.json());
-
-          // プレイヤーデータをstateに保持
-          setPlayerData(res);
-
-          // セッションストレージに保持
-          const recentUuid: string = res.uuid;
-          saveUUIDToSessionStorage(recentUuid);
-
-          // ベット画面へ
+				// uuidがなければnickname画面へ
+        if (playerData.uuid) {
           skipPage(2);
         } else {
-          // uuidがなければnickname画面へ
           goNext();
         }
         break;
@@ -103,7 +113,7 @@ export default function BlackJackPage(): JSX.Element {
     if (typeof value !== "number") {
       return false;
     }
-    return value >= 100 && playerData.point > value;
+    return value >= 100 && playerData.point >= value;
   };
 
   const confirmNickName = async (value: InputStateType): Promise<void> => {
@@ -125,6 +135,7 @@ export default function BlackJackPage(): JSX.Element {
     if (typeof value !== "number") {
       return;
     }
+    setBettingValue(value);
     await switchPage("betting-next");
   };
 
@@ -134,6 +145,7 @@ export default function BlackJackPage(): JSX.Element {
       <div className="h-screen bg-main-color text-white px-8">
         {phase === 0 ? (
           <TopComponent
+            playerPoint={playerData.point}
             onStart={async () => await switchPage("top-next")}
             openHowToPlay={openHowToPlay}
             openHistory={openHistory}

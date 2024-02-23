@@ -1,17 +1,20 @@
 import { Text, Button } from "@chakra-ui/react";
 
 type PropsType = {
+  playerPoint: number;
   onStart: (phase: string) => void;
   openHowToPlay: () => void;
-  openHistory: (phase: string) => void;
+  openHistory: (phase: string | undefined) => void;
 };
 
 export default function TopComponent(props: PropsType): JSX.Element {
-  const { onStart, openHowToPlay, openHistory } = props;
+  const { playerPoint, onStart, openHowToPlay, openHistory } = props;
   return (
     <>
       <div className="">
-        <div className="text-end">ポイント数:P</div>
+        <div className="text-end">
+          ポイント数: {playerPoint >= 0 ? playerPoint : "ー"}P
+        </div>
       </div>
       <Text fontSize="6xl" className="font-bold text-center mt-32 mb-16">
         BlackJack
