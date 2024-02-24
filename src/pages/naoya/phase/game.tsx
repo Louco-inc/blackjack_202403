@@ -3,7 +3,7 @@ import { CardType, PlayerType, ResultType } from "../../../types";
 import { useCardDeck, pick } from "@/hooks/useCardDeck";
 import { Button, Text } from "@chakra-ui/react";
 import Image from "next/image";
-import ResultDialog from "./ResultModal";
+import ResultModal from "./ResultModal";
 
 type PropsType = {
   playerData: PlayerType;
@@ -11,15 +11,24 @@ type PropsType = {
   betDoublePoint: () => void;
   openTop: () => void;
   onRetry: () => void;
+  onFinishedGame: (point: number) => void;
 };
 
 export default function GameComponent(props: PropsType): JSX.Element {
-  const { playerData, bettingPoint, betDoublePoint, openTop, onRetry } = props;
+  const {
+    playerData,
+    bettingPoint,
+    betDoublePoint,
+    openTop,
+    onRetry,
+    onFinishedGame,
+  } = props;
   const [cardDeck, setCardDeck] = useState<CardType[]>([]);
   const [playerHands, setPlayerHands] = useState<CardType[]>([]);
   const [dealerHands, setDealerHands] = useState<CardType[]>([]);
   const [showResult, setShowResult] = useState<boolean>(false);
   const [result, setResult] = useState<ResultType>("win");
+  const [resultPoint, setResultPoint] = useState<number>(0);
 
   useEffect(() => {
     const init = (): void => {
@@ -51,12 +60,35 @@ export default function GameComponent(props: PropsType): JSX.Element {
   const double = (): void => {
     betDoublePoint();
   };
+
+  const calcResultPoint = (result: ResultType): number => {
+    // 初手で21になった場合は3倍する
+    switch (result) {
+      case "win":
+        return bettingPoint * 2;
+      case "draw":
+        return bettingPoint;
+      case "lose":
+        return 0;
+    }
+  };
+
+  const finishGameHandler = (result: ResultType): void => {
+    const calculatePoint = calcResultPoint(result);
+    setResultPoint(calculatePoint);
+    const finishedPoint = result === "lose" ? -calculatePoint : calculatePoint;
+    onFinishedGame(finishedPoint);
+    // 結果、現在のポイント数をDBに保存
+    // 現在のポイント数を親コンポーネントのstateに保存
+    setResult(result);
+    setShowResult(true);
+  };
+
   const stand = (): void => {
     const playerResult = cardNumberSum(playerHands);
     // プレイヤーのポイントが22以上
     if (playerResult >= 22) {
-      setResult("lose");
-      setShowResult(true);
+      finishGameHandler("lose");
       return;
     }
     let dealerResult = cardNumberSum(dealerHands);
@@ -67,20 +99,17 @@ export default function GameComponent(props: PropsType): JSX.Element {
       }
     }
     if (dealerResult >= 22) {
-      setResult("win");
-      setShowResult(true);
+      finishGameHandler("win");
       return;
     }
     if (playerResult === dealerResult) {
-      setResult("draw");
+      finishGameHandler("draw");
     } else if (playerResult > dealerResult) {
-      setResult("win");
+      finishGameHandler("win");
     } else {
-      setResult("lose");
+      finishGameHandler("lose");
     }
     console.log({ playerResult, dealerResult });
-    // ディーラーのポイントが反映されない、、
-    setShowResult(true);
   };
   const surrender = (): void => {};
 
@@ -223,10 +252,12 @@ export default function GameComponent(props: PropsType): JSX.Element {
           </Button>
         </div>
       </div>
-      <ResultDialog
+      <ResultModal
         showModal={showResult}
         result={result}
-				bettingPoint={bettingPoint}
+        bettingPoint={bettingPoint}
+        resultPoint={resultPoint}
+        finishedPoint={playerData.point}
         openTop={handleOpenTop}
         onRetry={handleRetry}
       />

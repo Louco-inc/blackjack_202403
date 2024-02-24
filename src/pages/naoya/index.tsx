@@ -10,14 +10,14 @@ import InputForm from "../../components/InputForm";
 import { InputStateType, PlayerType } from "../../types";
 
 export default function BlackJackPage(): JSX.Element {
-  const [phase, setPhase] = useState<number>(0);
+  const [phase, setPhase] = useState<number>(3); // 初期値は0
   const [prevPhase, setPrevPhase] = useState<number>(0);
   const [playerData, setPlayerData] = useState<PlayerType>({
     nickname: "",
     uuid: "",
     point: -100,
   });
-  const [bettingPoint, setBettingPoint] = useState<number>(0);
+  const [bettingPoint, setBettingPoint] = useState<number>(200); // 初期値は0
 
   useEffect(() => {
     const init = async (): Promise<void> => {
@@ -36,9 +36,6 @@ export default function BlackJackPage(): JSX.Element {
     };
     init();
   }, []);
-
-  const openHowToPlay = (): void => {};
-  const openHistory = (): void => {};
 
   const switchPage = async (type: string): Promise<void> => {
     switch (type) {
@@ -127,6 +124,18 @@ export default function BlackJackPage(): JSX.Element {
     setBettingPoint((prev) => prev * 2);
   };
 
+  const openTop = (): void => {
+    setPhase(0);
+    setPrevPhase(0);
+  };
+  const onRetry = (): void => {
+    setPhase(2);
+    setPrevPhase(0);
+  };
+
+  const openHowToPlay = (): void => {};
+  const openHistory = (): void => {};
+
   return (
     <>
       <Header />
@@ -172,6 +181,14 @@ export default function BlackJackPage(): JSX.Element {
             playerData={playerData}
             bettingPoint={bettingPoint}
             betDoublePoint={betDoublePoint}
+            openTop={openTop}
+            onRetry={onRetry}
+            onFinishedGame={(newPoint: number) =>
+              setPlayerData((prev) => ({
+                ...playerData,
+                point: prev.point + newPoint,
+              }))
+            }
           />
         ) : (
           <></>

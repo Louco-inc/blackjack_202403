@@ -3,7 +3,6 @@ import {
   ModalOverlay,
   ModalContent,
   ModalBody,
-  ModalCloseButton,
   useDisclosure,
   Button,
 } from "@chakra-ui/react";
@@ -14,8 +13,8 @@ type PropsType = {
   showModal: boolean;
   result: "win" | "draw" | "lose";
   bettingPoint: number;
-  getPoint: number;
-  currentPoint: number;
+  resultPoint: number;
+  finishedPoint: number;
   openTop: () => void;
   onRetry: () => void;
 };
@@ -24,8 +23,8 @@ export default function ResultModal({
   showModal,
   result,
   bettingPoint,
-  getPoint,
-  currentPoint,
+  resultPoint,
+  finishedPoint,
   openTop,
   onRetry,
 }: PropsType): JSX.Element {
@@ -45,6 +44,7 @@ export default function ResultModal({
               <div className="mb-8">
                 {result === "win" && (
                   <Image
+                    className="m-auto"
                     src={`/images/win.png`}
                     alt="勝ち"
                     width={200}
@@ -53,8 +53,18 @@ export default function ResultModal({
                 )}
                 {result === "lose" && (
                   <Image
+                    className="m-auto"
                     src={`/images/lose.png`}
                     alt="負け"
+                    width={200}
+                    height={80}
+                  />
+                )}
+                {result === "draw" && (
+                  <Image
+                    className="m-auto"
+                    src={`/images/draw.png`}
+                    alt="引き分け"
                     width={200}
                     height={80}
                   />
@@ -62,18 +72,18 @@ export default function ResultModal({
               </div>
               <div className="my-8">
                 <div></div>
-                <div className="text-white">
-                  <div>
+                <div className="text-white font-bold">
+                  <div className="flex justify-around mb-4">
                     <span>ベットポイント</span>
                     <span>{bettingPoint}P</span>
                   </div>
-                  <div>
+                  <div className="flex justify-around mb-4">
                     <span>獲得ポイント</span>
-                    <span>{getPoint}P</span>
+                    <span>{resultPoint}P</span>
                   </div>
-                  <div>
+                  <div className="flex justify-around">
                     <span>現在のポイント</span>
-                    <span>{currentPoint}P</span>
+                    <span>{finishedPoint}P</span>
                   </div>
                 </div>
               </div>
