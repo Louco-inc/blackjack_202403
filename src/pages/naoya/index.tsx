@@ -123,6 +123,10 @@ export default function BlackJackPage(): JSX.Element {
     await switchPage("betting-next");
   };
 
+  const betDoublePoint = (): void => {
+    setBettingPoint((prev) => prev * 2);
+  };
+
   return (
     <>
       <Header />
@@ -164,7 +168,11 @@ export default function BlackJackPage(): JSX.Element {
           <></>
         )}
         {phase === 3 ? (
-          <GameComponent playerData={playerData} bettingPoint={bettingPoint} />
+          <GameComponent
+            playerData={playerData}
+            bettingPoint={bettingPoint}
+            betDoublePoint={betDoublePoint}
+          />
         ) : (
           <></>
         )}

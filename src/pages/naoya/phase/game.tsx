@@ -7,16 +7,15 @@ import Image from "next/image";
 type PropsType = {
   playerData: PlayerType;
   bettingPoint: number;
+  betDoublePoint: () => void;
 };
 
 export default function GameComponent(props: PropsType): JSX.Element {
-  const { playerData, bettingPoint } = props;
+  const { playerData, bettingPoint, betDoublePoint } = props;
   const [cardDeck, setCardDeck] = useState<CardType[]>([]);
   const [playerHands, setPlayerHands] = useState<CardType[]>([]);
   const [dealerHands, setDealerHands] = useState<CardType[]>([]);
 
-  // トランプデータを生成してランダムに並べ替える
-  // プレイヤーとディーラーにカードを2枚ずつ配る
   useEffect(() => {
     const init = (): void => {
       const cardDeck = useCardDeck();
@@ -31,10 +30,41 @@ export default function GameComponent(props: PropsType): JSX.Element {
     init();
   }, []);
 
-  const hit = () => {};
-  const double = () => {};
-  const stand = () => {};
-  const surrender = () => {};
+  const hit = (user: "player" | "dealer"): void => {
+    const newCard = pick(cardDeck, setCardDeck);
+    if (user === "player") {
+      const afterCount = cardNumberSum([...playerHands]) + Number(newCard.rank);
+      setPlayerHands((prev) => prev.concat([newCard]));
+      if (afterCount > 21) {
+        // 21以上の場合はバースト standを呼び出す
+        stand();
+      }
+    } else {
+      setDealerHands((prev) => prev.concat([newCard]));
+    }
+  };
+  const double = (): void => {
+    betDoublePoint();
+  };
+  const stand = (): void => {
+    const playerResult = cardNumberSum(playerHands);
+    let dealerResult = cardNumberSum(dealerHands);
+    if (dealerResult < 17) {
+      while (dealerResult < 17) {
+        const newCard = pick(cardDeck, setCardDeck);
+        dealerResult += Number(newCard.rank);
+      }
+    }
+    // 点数を比較
+    if (playerResult === dealerResult) {
+      // 引き分け
+    } else if (playerResult > dealerResult) {
+      // プレイヤー勝利
+    } else {
+      // ディーラー勝利
+    }
+  };
+  const surrender = (): void => {};
 
   const cardNumberSum = (cards: CardType[]): number => {
     // TODO: A, K, Q, Jの数字を変換する処理を入れる
@@ -57,14 +87,12 @@ export default function GameComponent(props: PropsType): JSX.Element {
               fontSize="2xl"
               color="mainColor"
             >
-              {cardNumberSum(playerHands)}
+              {cardNumberSum(dealerHands)}
             </Text>
-            <Text className="self-end whitespace-nowrap">
-              {playerData.nickname}
-            </Text>
+            <Text className="self-end whitespace-nowrap mr-4">ディーラー</Text>
             <div className="relative h-60 w-1/2">
-              {playerHands.map((hand, i) => {
-                const left = `left-${8 * (1 + i)}`;
+              {dealerHands.map((hand, i) => {
+                const left = `left-${8 * i}`;
                 return (
                   <div
                     key={hand.imageId}
@@ -90,16 +118,17 @@ export default function GameComponent(props: PropsType): JSX.Element {
             >
               {cardNumberSum(playerHands)}
             </Text>
-            <Text className="self-end whitespace-nowrap">
+            <Text className="self-end whitespace-nowrap mr-4">
               {playerData.nickname}
             </Text>
             <div className="relative h-60 w-1/2">
               {playerHands.map((hand, i) => {
-                const left = `left-${8 * (1 + i)}`;
+                const left = `left-${8 * i}`;
+                const zIndex = `z-${i * 10}`;
                 return (
                   <div
                     key={hand.imageId}
-                    className={"absolute" + ` ${left} z-${i + 1}0`}
+                    className={`absolute ${left} ${zIndex}`}
                   >
                     <Image
                       src={`/images/${hand.imageId}.png`}
@@ -120,7 +149,7 @@ export default function GameComponent(props: PropsType): JSX.Element {
             color="#ffffff"
             size="lg"
             variant="outline"
-            onClick={hit}
+            onClick={() => hit("player")}
           >
             ヒット
           </Button>
