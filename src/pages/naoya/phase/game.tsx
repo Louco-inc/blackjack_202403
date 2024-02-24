@@ -15,6 +15,7 @@ export default function GameComponent(props: PropsType): JSX.Element {
   const [cardDeck, setCardDeck] = useState<CardType[]>([]);
   const [playerHands, setPlayerHands] = useState<CardType[]>([]);
   const [dealerHands, setDealerHands] = useState<CardType[]>([]);
+  const [showResult, setShowResult] = useState<boolean>(false);
 
   useEffect(() => {
     const init = (): void => {
@@ -63,14 +64,20 @@ export default function GameComponent(props: PropsType): JSX.Element {
     } else {
       // ディーラー勝利
     }
+    setShowResult(true);
   };
   const surrender = (): void => {};
 
   const cardNumberSum = (cards: CardType[]): number => {
-    // TODO: A, K, Q, Jの数字を変換する処理を入れる
+    // TODO: Aを1or11に変換する処理を入れる
     return cards
       .map((card) => Number(card.rank))
-      .reduce((total, num) => total + num, 0);
+      .reduce((total, num) => {
+        if (num > 10) {
+          return total + 10;
+        }
+        return total + num;
+      }, 0);
   };
 
   return (
@@ -92,19 +99,28 @@ export default function GameComponent(props: PropsType): JSX.Element {
             <Text className="self-end whitespace-nowrap mr-4">ディーラー</Text>
             <div className="relative h-60 w-1/2">
               {dealerHands.map((hand, i) => {
-                const left = `left-${8 * i}`;
+								const leftPosition = `${24 * i}px`;
                 return (
                   <div
                     key={hand.imageId}
-                    className={"absolute" + ` ${left} z-${i + 1}0`}
+										style={{ left: leftPosition }} // tailwindでは動的な値が指定できずやむなくインラインで適用
+                    className={"absolute" + ` z-${i + 1}0`}
                   >
-                    <Image
-                      src={`/images/back-of-card.png`}
-                      alt="トランプの画像"
-                      width={160}
-                      height={240}
-                      objectFit="contain"
-                    />
+                    {showResult ? (
+                      <Image
+                        src={`/images/${hand.imageId}.png`}
+                        alt="トランプの画像"
+                        width={160}
+                        height={240}
+                      />
+                    ) : (
+                      <Image
+                        src={`/images/back-of-card.png`}
+                        alt="トランプの画像"
+                        width={160}
+                        height={240}
+                      />
+                    )}
                   </div>
                 );
               })}
@@ -123,19 +139,19 @@ export default function GameComponent(props: PropsType): JSX.Element {
             </Text>
             <div className="relative h-60 w-1/2">
               {playerHands.map((hand, i) => {
-                const left = `left-${8 * i}`;
+                const leftPosition = `${24 * i}px`;
                 const zIndex = `z-${i * 10}`;
                 return (
                   <div
                     key={hand.imageId}
-                    className={`absolute ${left} ${zIndex}`}
+                    style={{ left: leftPosition }} // tailwindでは動的な値が指定できずやむなくインラインで適用
+                    className={`absolute ${zIndex}`}
                   >
                     <Image
                       src={`/images/${hand.imageId}.png`}
                       alt="トランプの画像"
                       width={160}
                       height={240}
-                      objectFit="contain"
                     />
                   </div>
                 );
