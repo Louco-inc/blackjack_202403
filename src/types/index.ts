@@ -10,3 +10,4 @@ export type CardType = {
   rank: string;
   imageId: string;
 };
+export type ResultType = "win" | "draw" | "lose";

@@ -10,7 +10,7 @@ import InputForm from "../../components/InputForm";
 import { InputStateType, PlayerType } from "../../types";
 
 export default function BlackJackPage(): JSX.Element {
-  const [phase, setPhase] = useState<number>(3);
+  const [phase, setPhase] = useState<number>(0);
   const [prevPhase, setPrevPhase] = useState<number>(0);
   const [playerData, setPlayerData] = useState<PlayerType>({
     nickname: "",
