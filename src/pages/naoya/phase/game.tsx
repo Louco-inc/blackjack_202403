@@ -104,6 +104,7 @@ export default function GameComponent(props: PropsType): JSX.Element {
 
   const stand = (): void => {
     const playerResult: number = cardNumberSum(playerHands);
+		setPlayerResultPoint(playerResult);
     const dealerResult = calcDealerPoint(dealerHands);
     setDealerResultPoint(dealerResult);
     if (dealerResult >= 22) {
@@ -118,7 +119,13 @@ export default function GameComponent(props: PropsType): JSX.Element {
       finishGameHandler("lose");
     }
   };
-  const surrender = (): void => {};
+  const surrender = (): void => {
+    const playerResult: number = cardNumberSum(playerHands);
+		setPlayerResultPoint(playerResult);
+    const dealerResult = cardNumberSum(dealerHands);
+    setDealerResultPoint(dealerResult);
+    finishGameHandler("lose");
+  };
 
   const cardNumberSum = (cards: CardType[]): number => {
     // TODO: Aを1or11に変換する処理を入れる
