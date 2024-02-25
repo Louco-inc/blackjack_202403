@@ -86,7 +86,6 @@ export default function GameHistory(props: PropsType): JSX.Element {
         }));
       }
     );
-    console.log({ historiesData });
     setHistories(historiesData);
     onOpen();
   };

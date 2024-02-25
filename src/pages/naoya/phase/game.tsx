@@ -94,7 +94,7 @@ export default function GameComponent(props: PropsType): JSX.Element {
 
   const saveGameHistory = async (
     finishedPoint: number,
-		currentPoint: number,
+    currentPoint: number,
     result: ResultType
   ): Promise<void> => {
     const uuid: string = getUUIDFromSessionStorage() ?? "";
@@ -107,7 +107,7 @@ export default function GameComponent(props: PropsType): JSX.Element {
       result,
       increasePoint,
       decreasePoint,
-			currentPoint,
+      currentPoint,
       playerHands,
       dealerHands,
     };
@@ -118,15 +118,30 @@ export default function GameComponent(props: PropsType): JSX.Element {
     });
   };
 
+  const updatedPlayerPoint = async (
+    currentPoint: number,
+    id: number
+  ): Promise<void> => {
+    const params = {
+      id,
+      currentPoint,
+    };
+    await fetch(`/api/player/${id}`, {
+      method: "PUT",
+      body: JSON.stringify(params),
+    });
+  };
+
   const finishGameHandler = (result: ResultType): void => {
     const calculatePoint = calcResultPoint(result);
     setResultPoint(calculatePoint);
     const finishedPoint = result === "lose" ? -calculatePoint : calculatePoint;
-		const currentPoint = playerData.point + finishedPoint;
+    const currentPoint = playerData.point + finishedPoint;
     onFinishedGame(currentPoint);
     setResult(result);
     setShowResult(true);
     saveGameHistory(finishedPoint, currentPoint, result);
+    updatedPlayerPoint(currentPoint, playerData.id);
   };
 
   const calcDealerPoint = (dealerHands: CardType[]): number => {

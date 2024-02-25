@@ -42,14 +42,14 @@ export default function ResultModal({
     if (showModal) {
       const open = async (): Promise<void> => {
         await new Promise((resolve) => setTimeout(resolve, 1000));
-				onOpen();
+        onOpen();
       };
       open();
     }
   }, [showModal]);
   return (
     <>
-      <Modal isOpen={isOpen} onClose={onClose}>
+      <Modal isOpen={isOpen} onClose={onClose} closeOnOverlayClick={false}>
         <ModalOverlay />
         <ModalContent>
           <ModalBody className="!p-0">

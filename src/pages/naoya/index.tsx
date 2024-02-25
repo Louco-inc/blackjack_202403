@@ -14,6 +14,7 @@ export default function BlackJackPage(): JSX.Element {
   const [phase, setPhase] = useState<number>(0); // 初期値は0
   const [prevPhase, setPrevPhase] = useState<number>(0);
   const [playerData, setPlayerData] = useState<PlayerType>({
+    id: -100,
     nickname: "",
     uuid: "",
     point: -100,
@@ -119,6 +120,10 @@ export default function BlackJackPage(): JSX.Element {
       return;
     }
     setBettingPoint(value);
+    setPlayerData((prev) => ({
+      ...playerData,
+      point: prev.point - value,
+    }));
     await switchPage("betting-next");
   };
 
@@ -186,8 +191,8 @@ export default function BlackJackPage(): JSX.Element {
             onRetry={onRetry}
             onFinishedGame={(newPoint: number) =>
               setPlayerData((prev) => ({
-                ...playerData,
-                point: prev.point + newPoint,
+                ...prev,
+                point: newPoint,
               }))
             }
           />
