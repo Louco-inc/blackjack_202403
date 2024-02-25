@@ -51,9 +51,9 @@ export default function ResultModal({
     <>
       <Modal isOpen={isOpen} onClose={onClose} closeOnOverlayClick={false}>
         <ModalOverlay />
-        <ModalContent>
+        <ModalContent className="!bg-main-color border-white border-2 !rounded-3xl">
           <ModalBody className="!p-0">
-            <div className="bg-main-color p-8">
+            <div className="p-8">
               <div className="">
                 {result === "win" && (
                   <Image

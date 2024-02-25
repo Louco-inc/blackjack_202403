@@ -9,6 +9,7 @@ import {
 import InputForm from "../../components/InputForm";
 import { InputStateType, PlayerType } from "../../types";
 import GameHistory from "./phase/GameHistory";
+import GameRuleModal from "@/components/GameRuleModal";
 
 export default function BlackJackPage(): JSX.Element {
   const [phase, setPhase] = useState<number>(0); // 初期値は0
@@ -20,7 +21,8 @@ export default function BlackJackPage(): JSX.Element {
     point: -100,
   });
   const [bettingPoint, setBettingPoint] = useState<number>(200); // 初期値は0
-  const [showHistoryModal, setShowHistoryModal] = useState<boolean>(false);
+  const [showHistoryModal, setHistoryModal] = useState<boolean>(false);
+  const [showGameRuleModal, setGameRuleModal] = useState<boolean>(false);
 
   useEffect(() => {
     const init = async (): Promise<void> => {
@@ -140,8 +142,6 @@ export default function BlackJackPage(): JSX.Element {
     setPrevPhase(0);
   };
 
-  const openHowToPlay = (): void => {};
-
   return (
     <>
       <Header />
@@ -150,8 +150,8 @@ export default function BlackJackPage(): JSX.Element {
           <TopComponent
             playerPoint={playerData.point}
             onStart={async () => await switchPage("top-next")}
-            openHowToPlay={openHowToPlay}
-            openHistory={() => setShowHistoryModal(true)}
+            openHowToPlay={() => setGameRuleModal(true)}
+            openHistory={() => setHistoryModal(true)}
           />
         ) : (
           <></>
@@ -202,7 +202,11 @@ export default function BlackJackPage(): JSX.Element {
       </div>
       <GameHistory
         showHistoryModal={showHistoryModal}
-        closeHistoryModal={() => setShowHistoryModal(false)}
+        closeHistoryModal={() => setHistoryModal(false)}
+      />
+      <GameRuleModal
+        showGameRuleModal={showGameRuleModal}
+        closeGameRuleModal={() => setGameRuleModal(false)}
       />
     </>
   );

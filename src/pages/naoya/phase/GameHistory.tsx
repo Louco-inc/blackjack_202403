@@ -93,9 +93,9 @@ export default function GameHistory(props: PropsType): JSX.Element {
     <>
       <Modal size="6xl" isOpen={isOpen} onClose={closeHistoryModal}>
         <ModalOverlay />
-        <ModalContent>
+        <ModalContent className="!bg-main-color border-white border-2 !rounded-3xl">
           <ModalBody className="!p-0">
-            <div className="bg-main-color p-8 text-white !font-bold">
+            <div className="p-8 text-white !font-bold">
               <TableContainer>
                 <Table variant="simple">
                   <Thead>
@@ -182,7 +182,7 @@ export default function GameHistory(props: PropsType): JSX.Element {
             </div>
           </ModalBody>
 
-          <ModalFooter className="bg-main-color flex justify-center">
+          <ModalFooter className="flex !justify-center">
             <Button
               color="#ffffff"
               size="lg"
