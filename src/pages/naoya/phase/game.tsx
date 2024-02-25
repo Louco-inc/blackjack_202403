@@ -4,6 +4,7 @@ import { useCardDeck, pick } from "@/hooks/useCardDeck";
 import { Button, Text } from "@chakra-ui/react";
 import Image from "next/image";
 import ResultModal from "./ResultModal";
+import { getUUIDFromSessionStorage } from "@/lib/SessionStorage";
 
 type PropsType = {
   playerData: PlayerType;
@@ -91,15 +92,41 @@ export default function GameComponent(props: PropsType): JSX.Element {
     }
   };
 
+  const saveGameHistory = async (
+    finishedPoint: number,
+		currentPoint: number,
+    result: ResultType
+  ): Promise<void> => {
+    const uuid: string = getUUIDFromSessionStorage() ?? "";
+    const headers = new Headers();
+    headers.append("Authorization", uuid);
+    const [increasePoint, decreasePoint] =
+      finishedPoint > 0 ? [finishedPoint, 0] : [0, bettingPoint];
+    const params = {
+      matchDay: new Date(),
+      result,
+      increasePoint,
+      decreasePoint,
+			currentPoint,
+      playerHands,
+      dealerHands,
+    };
+    await fetch("/api/history", {
+      method: "POST",
+      body: JSON.stringify(params),
+      headers,
+    });
+  };
+
   const finishGameHandler = (result: ResultType): void => {
     const calculatePoint = calcResultPoint(result);
     setResultPoint(calculatePoint);
     const finishedPoint = result === "lose" ? -calculatePoint : calculatePoint;
-    onFinishedGame(finishedPoint);
-    // 結果、現在のポイント数をDBに保存
-    // 現在のポイント数を親コンポーネントのstateに保存
+		const currentPoint = playerData.point + finishedPoint;
+    onFinishedGame(currentPoint);
     setResult(result);
     setShowResult(true);
+    saveGameHistory(finishedPoint, currentPoint, result);
   };
 
   const calcDealerPoint = (dealerHands: CardType[]): number => {

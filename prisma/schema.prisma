@@ -31,6 +31,7 @@ model History {
   result String
   increasePoint Int
   decreasePoint Int
+  currentPoint Int
   player Player @relation(fields: [playerId], references: [id])
   playerId Int
   playerHandCards PlayerHandCard[] @relation(name: "PlayerHandCards")
@@ -44,7 +45,8 @@ model PlayerHandCard {
   playerHistory History @relation(name: "PlayerHandCards", fields: [playerHistoryId], references: [id])
   playerHistoryId Int
   imageId String
-  cardNumber Int
+  suit String
+  rank String
 }
 
 model DealerHandCard {
@@ -54,5 +56,6 @@ model DealerHandCard {
   dealerHistory History @relation(name: "DealerHandCards", fields: [dealerHistoryId], references: [id])
   dealerHistoryId Int
   imageId String
-  cardNumber Int
+  suit String
+  rank String
 }

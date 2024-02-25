@@ -21,6 +21,7 @@ async function main(): Promise<void> {
       matchDay: new Date(),
       increasePoint: 100,
       decreasePoint: 0,
+      currentPoint: 1000,
       playerId: player.id,
       playerHandCards: {
         create: [],
@@ -32,30 +33,36 @@ async function main(): Promise<void> {
   });
   const playerHands = [
     {
-      imageId: "sample1",
-      cardNumber: 6,
+      imageId: "diamond6",
+      suit: "6",
+      rank: "diamond",
     },
     {
-      imageId: "sample2",
-      cardNumber: 7,
+      imageId: "diamond7",
+      suit: "7",
+      rank: "diamond",
     },
     {
-      imageId: "sample3",
-      cardNumber: 8,
+      imageId: "diamond8",
+      suit: "8",
+      rank: "diamond",
     },
   ];
   const dealerHands = [
     {
-      imageId: "sample4",
-      cardNumber: 9,
+      imageId: "diamond9",
+      suit: "9",
+      rank: "diamond",
     },
     {
-      imageId: "sample5",
-      cardNumber: 5,
+      imageId: "diamond5",
+      suit: "5",
+      rank: "diamond",
     },
     {
-      imageId: "sample6",
-      cardNumber: 4,
+      imageId: "diamond4",
+      suit: "4",
+      rank: "diamond",
     },
   ];
 
@@ -64,7 +71,8 @@ async function main(): Promise<void> {
       await prisma.playerHandCard.create({
         data: {
           imageId: hand.imageId,
-          cardNumber: hand.cardNumber,
+          suit: hand.suit,
+          rank: hand.rank,
           playerHistoryId: history.id,
         },
       });
@@ -75,7 +83,8 @@ async function main(): Promise<void> {
       await prisma.dealerHandCard.create({
         data: {
           imageId: hand.imageId,
-          cardNumber: hand.cardNumber,
+          suit: hand.suit,
+          rank: hand.rank,
           dealerHistoryId: history.id,
         },
       });
