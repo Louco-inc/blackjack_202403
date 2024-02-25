@@ -29,6 +29,8 @@ export default function GameComponent(props: PropsType): JSX.Element {
   const [showResult, setShowResult] = useState<boolean>(false);
   const [result, setResult] = useState<ResultType>("win");
   const [resultPoint, setResultPoint] = useState<number>(0);
+  const [playerResultPoint, setPlayerResultPoint] = useState<number>(0);
+  const [dealerResultPoint, setDealerResultPoint] = useState<number>(0);
 
   useEffect(() => {
     const init = (): void => {
@@ -85,7 +87,8 @@ export default function GameComponent(props: PropsType): JSX.Element {
   };
 
   const stand = (): void => {
-    const playerResult = cardNumberSum(playerHands);
+    const playerResult: number = cardNumberSum(playerHands);
+    setPlayerResultPoint(playerResult);
     // プレイヤーのポイントが22以上
     if (playerResult >= 22) {
       finishGameHandler("lose");
@@ -98,6 +101,7 @@ export default function GameComponent(props: PropsType): JSX.Element {
         dealerResult += Number(newCard.rank);
       }
     }
+    setDealerResultPoint(dealerResult);
     if (dealerResult >= 22) {
       finishGameHandler("win");
       return;
@@ -257,7 +261,11 @@ export default function GameComponent(props: PropsType): JSX.Element {
         result={result}
         bettingPoint={bettingPoint}
         resultPoint={resultPoint}
-        finishedPoint={playerData.point}
+        playerData={playerData}
+        playerHands={playerHands}
+        dealerHands={dealerHands}
+        playerResultPoint={playerResultPoint}
+        dealerResultPoint={dealerResultPoint}
         openTop={handleOpenTop}
         onRetry={handleRetry}
       />
