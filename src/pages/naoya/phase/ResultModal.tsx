@@ -40,7 +40,11 @@ export default function ResultModal({
   const { isOpen, onOpen, onClose } = useDisclosure();
   useEffect(() => {
     if (showModal) {
-      onOpen();
+      const open = async (): Promise<void> => {
+        await new Promise((resolve) => setTimeout(resolve, 1000));
+				onOpen();
+      };
+      open();
     }
   }, [showModal]);
   return (
@@ -80,9 +84,9 @@ export default function ResultModal({
                 )}
               </div>
               <div className="text-white flex justify-center h-52">
-                <div className="w-1/2 text-center">
+                <div className="w-1/2 text-center font-bold">
                   <div>{playerData.nickname}</div>
-                  <div className="relative h-36">
+                  <div className="relative h-36 mt-2 mx-6">
                     {playerHands.map((hand, i) => {
                       const leftPosition = `${15 * i}px`;
                       const zIndex = `z-${i * 10}`;
@@ -104,9 +108,9 @@ export default function ResultModal({
                   </div>
                   <div className="font-bold">{playerResultPoint}</div>
                 </div>
-                <div className="w-1/2 text-center">
+                <div className="w-1/2 text-center font-bold">
                   <div>ディーラー</div>
-                  <div className="relative h-40">
+                  <div className="relative h-36 mt-2 mx-6">
                     {dealerHands.map((hand, i) => {
                       const leftPosition = `${15 * i}px`;
                       const zIndex = `z-${i * 10}`;
@@ -126,7 +130,7 @@ export default function ResultModal({
                       );
                     })}
                   </div>
-                  <div className="font-bold">{dealerResultPoint}</div>
+                  <div>{dealerResultPoint}</div>
                 </div>
               </div>
               <div className="w-96 border"></div>

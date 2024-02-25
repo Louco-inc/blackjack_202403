@@ -49,11 +49,15 @@ export default function GameComponent(props: PropsType): JSX.Element {
   const hit = (user: "player" | "dealer"): void => {
     const newCard = pick(cardDeck, setCardDeck);
     if (user === "player") {
-      const afterCount = cardNumberSum([...playerHands]) + Number(newCard.rank);
+      const afterPoint =
+        cardNumberSum([...playerHands]) + cardNumberSum([newCard]);
       setPlayerHands((prev) => prev.concat([newCard]));
-      if (afterCount > 21) {
-        // 21以上の場合はバースト standを呼び出す
-        stand();
+      if (afterPoint > 21) {
+        // 21以上の場合はバースト
+        setPlayerResultPoint(afterPoint);
+        const dealerResult = calcDealerPoint(dealerHands);
+        setDealerResultPoint(dealerResult);
+        finishGameHandler("lose");
       }
     } else {
       setDealerHands((prev) => prev.concat([newCard]));
@@ -86,21 +90,21 @@ export default function GameComponent(props: PropsType): JSX.Element {
     setShowResult(true);
   };
 
-  const stand = (): void => {
-    const playerResult: number = cardNumberSum(playerHands);
-    setPlayerResultPoint(playerResult);
-    // プレイヤーのポイントが22以上
-    if (playerResult >= 22) {
-      finishGameHandler("lose");
-      return;
-    }
+  const calcDealerPoint = (dealerHands: CardType[]): number => {
     let dealerResult = cardNumberSum(dealerHands);
     if (dealerResult < 17) {
       while (dealerResult < 17) {
         const newCard = pick(cardDeck, setCardDeck);
-        dealerResult += Number(newCard.rank);
+        setDealerHands((prev) => prev.concat([newCard]));
+        dealerResult += cardNumberSum([newCard]);
       }
     }
+    return dealerResult;
+  };
+
+  const stand = (): void => {
+    const playerResult: number = cardNumberSum(playerHands);
+    const dealerResult = calcDealerPoint(dealerHands);
     setDealerResultPoint(dealerResult);
     if (dealerResult >= 22) {
       finishGameHandler("win");
@@ -113,7 +117,6 @@ export default function GameComponent(props: PropsType): JSX.Element {
     } else {
       finishGameHandler("lose");
     }
-    console.log({ playerResult, dealerResult });
   };
   const surrender = (): void => {};
 
