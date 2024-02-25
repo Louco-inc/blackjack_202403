@@ -8,6 +8,7 @@ import {
 } from "../../lib/SessionStorage";
 import InputForm from "../../components/InputForm";
 import { InputStateType, PlayerType } from "../../types";
+import GameHistory from "./phase/GameHistory";
 
 export default function BlackJackPage(): JSX.Element {
   const [phase, setPhase] = useState<number>(0); // 初期値は0
@@ -18,6 +19,7 @@ export default function BlackJackPage(): JSX.Element {
     point: -100,
   });
   const [bettingPoint, setBettingPoint] = useState<number>(200); // 初期値は0
+  const [showHistoryModal, setShowHistoryModal] = useState<boolean>(false);
 
   useEffect(() => {
     const init = async (): Promise<void> => {
@@ -134,7 +136,6 @@ export default function BlackJackPage(): JSX.Element {
   };
 
   const openHowToPlay = (): void => {};
-  const openHistory = (): void => {};
 
   return (
     <>
@@ -145,7 +146,7 @@ export default function BlackJackPage(): JSX.Element {
             playerPoint={playerData.point}
             onStart={async () => await switchPage("top-next")}
             openHowToPlay={openHowToPlay}
-            openHistory={openHistory}
+            openHistory={() => setShowHistoryModal(true)}
           />
         ) : (
           <></>
@@ -194,6 +195,10 @@ export default function BlackJackPage(): JSX.Element {
           <></>
         )}
       </div>
+      <GameHistory
+        showHistoryModal={showHistoryModal}
+        closeHistoryModal={() => setShowHistoryModal(false)}
+      />
     </>
   );
 }
