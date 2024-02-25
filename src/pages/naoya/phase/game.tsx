@@ -42,6 +42,18 @@ export default function GameComponent(props: PropsType): JSX.Element {
       const dealerCard1 = pick(cardDeck, setCardDeck);
       const dealerCard2 = pick(cardDeck, setCardDeck);
       setDealerHands([dealerCard1, dealerCard2]);
+
+      const playerResult: number = cardNumberSum(playerHands);
+      const dealerResult: number = cardNumberSum(dealerHands);
+      if (playerResult === 21) {
+        setPlayerResultPoint(playerResult);
+        setDealerResultPoint(dealerResult);
+        if (dealerResult === 21) {
+          finishGameHandler("draw");
+        } else {
+          finishGameHandler("win");
+        }
+      }
     };
     init();
   }, []);
@@ -104,7 +116,7 @@ export default function GameComponent(props: PropsType): JSX.Element {
 
   const stand = (): void => {
     const playerResult: number = cardNumberSum(playerHands);
-		setPlayerResultPoint(playerResult);
+    setPlayerResultPoint(playerResult);
     const dealerResult = calcDealerPoint(dealerHands);
     setDealerResultPoint(dealerResult);
     if (dealerResult >= 22) {
@@ -121,7 +133,7 @@ export default function GameComponent(props: PropsType): JSX.Element {
   };
   const surrender = (): void => {
     const playerResult: number = cardNumberSum(playerHands);
-		setPlayerResultPoint(playerResult);
+    setPlayerResultPoint(playerResult);
     const dealerResult = cardNumberSum(dealerHands);
     setDealerResultPoint(dealerResult);
     finishGameHandler("lose");
