@@ -78,6 +78,7 @@ export default function GameComponent(props: PropsType): JSX.Element {
   };
   const double = (): void => {
     betDoublePoint();
+    hit("player");
   };
 
   const calcResultPoint = (result: ResultType): number => {
