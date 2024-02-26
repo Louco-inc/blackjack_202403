@@ -54,10 +54,11 @@ export default function BettingComponent({
 
   return (
     <>
-      <div className="pt-8">
+      <div className="pt-60 w-1/2 mx-auto">
         <FormControl className="mt-4" isInvalid={isError}>
-          <FormLabel>{label}</FormLabel>
+          <FormLabel className="!font-bold">{label}</FormLabel>
           <Input
+            className="!bg-white !text-black"
             type="text"
             value={value}
             onChange={(e) => {
@@ -72,23 +73,23 @@ export default function BettingComponent({
           />
           <FormErrorMessage>{errorMessage}</FormErrorMessage>
         </FormControl>
-        <div>
+        <div className="flex justify-center mt-12">
           <Button
             className="mt-4"
+            bgColor="primaryButtonColor"
             color="#ffffff"
             size="lg"
-            variant="outline"
             onClick={emit}
           >
             {confirmButtonLabel}
           </Button>
         </div>
-        <div>
+        <div className="flex justify-center">
           <Button
             className="mt-4"
             color="#ffffff"
             size="lg"
-            variant="ghost"
+            variant="outline"
             onClick={goBack}
           >
             戻る
