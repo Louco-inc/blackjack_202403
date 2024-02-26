@@ -1,6 +1,7 @@
 import type { Config } from "tailwindcss";
 
 const config: Config = {
+  mode: "jit",
   content: [
     "./src/pages/**/*.{js,ts,jsx,tsx,mdx}",
     "./src/components/**/*.{js,ts,jsx,tsx,mdx}",
@@ -19,6 +20,7 @@ const config: Config = {
         "primary-button-color": "#F1E500",
         "error-message-color": "#FF3F3F",
       },
+
     },
   },
   plugins: [],
