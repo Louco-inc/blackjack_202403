@@ -97,7 +97,7 @@ export default function GameHistory(props: PropsType): JSX.Element {
           <ModalBody className="!p-0">
             <TableContainer
               overflowY="auto"
-              className="px-8 pb-8 text-white !font-bold max-h-[600px] whitespace-nowrap top-0"
+              className="px-8 pb-8 text-white !font-bold max-h-[500px] whitespace-nowrap top-0"
             >
               <Table variant="simple" className="table-auto">
                 <Thead className="sticky top-0 z-50 !bg-main-color">
