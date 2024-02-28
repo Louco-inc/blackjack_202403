@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import Header from "../../components/header";
-import TopComponent from "./phase/top";
+import TopComponent from "../naoya/phase/top";
 import GameComponent from "./phase/game";
 import {
   getUUIDFromSessionStorage,
@@ -8,7 +8,6 @@ import {
 } from "../../lib/SessionStorage";
 import InputForm from "../../components/InputForm";
 import { InputStateType, PlayerType } from "../../types";
-import GameHistory from "./phase/GameHistory";
 import GameRuleModal from "@/components/GameRuleModal";
 
 export default function BlackJackPage(): JSX.Element {
@@ -21,7 +20,6 @@ export default function BlackJackPage(): JSX.Element {
     point: -100,
   });
   const [bettingPoint, setBettingPoint] = useState<number>(0); // 初期値は0
-  const [showHistoryModal, setHistoryModal] = useState<boolean>(false);
   const [showGameRuleModal, setGameRuleModal] = useState<boolean>(false);
 
   useEffect(() => {
@@ -143,7 +141,7 @@ export default function BlackJackPage(): JSX.Element {
             playerPoint={playerData.point}
             onStart={async () => await switchPage("top-next")}
             openHowToPlay={() => setGameRuleModal(true)}
-            openHistory={() => setHistoryModal(true)}
+            openHistory={() => alert("戦歴画面を開く")}
           />
         ) : (
           <></>
@@ -192,10 +190,6 @@ export default function BlackJackPage(): JSX.Element {
           <></>
         )}
       </div>
-      <GameHistory
-        showHistoryModal={showHistoryModal}
-        closeHistoryModal={() => setHistoryModal(false)}
-      />
       <GameRuleModal
         showGameRuleModal={showGameRuleModal}
         closeGameRuleModal={() => setGameRuleModal(false)}

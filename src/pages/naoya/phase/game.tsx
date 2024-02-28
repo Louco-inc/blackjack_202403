@@ -212,13 +212,15 @@ export default function GameComponent(props: PropsType): JSX.Element {
         </div>
         <div>
           <div className="pt-4 flex justify-center">
-            <Text
-              className="font-bold text-center h-10 w-10 leading-10 bg-white rounded-lg"
-              fontSize="2xl"
-              color="mainColor"
-            >
-              {cardNumberSum(dealerHands)}
-            </Text>
+            {showResult && (
+              <Text
+                className="font-bold text-center h-10 w-10 leading-10 bg-white rounded-lg"
+                fontSize="2xl"
+                color="mainColor"
+              >
+                {cardNumberSum(dealerHands)}
+              </Text>
+            )}
             <Text className="self-end whitespace-nowrap mr-4">ディーラー</Text>
             <div className="relative h-60 w-1/2">
               {dealerHands.map((hand, i) => {
