@@ -1,4 +1,9 @@
+import { useState, useEffect } from "react";
+import { CardType } from "@/types";
 import { PlayerType } from "@/types";
+import { Button } from "@chakra-ui/react";
+import Image from "next/image";
+import { useCardDeck } from "@/hooks/useCardDeck";
 
 type PropsType = {
   playerData: PlayerType;
@@ -10,9 +15,55 @@ type PropsType = {
 };
 
 export default function GameComponent(props: PropsType): JSX.Element {
+  useEffect(() => {
+    const init = (): void => {
+      const cardDeck = useCardDeck();
+      console.log(cardDeck);
+    };
+    init();
+  });
+
   return (
     <>
-      <div className="h-full relative text-white">ゲーム画面</div>
+      <div></div>
+      <div className="flex justify-center">
+        <Button
+          className="mr-8"
+          color="FFFFFF"
+          variant="outline"
+          fontSize="16"
+          fontWeight="bold"
+        >
+          ヒット
+        </Button>
+        <Button
+          className="mr-8"
+          color="FFFFFF"
+          variant="outline"
+          fontSize="16"
+          fontWeight="bold"
+        >
+          ダブル
+        </Button>
+        <Button
+          className="mr-8"
+          color="FFFFFF"
+          variant="outline"
+          fontSize="16"
+          fontWeight="bold"
+        >
+          スタンド
+        </Button>
+        <Button
+          className="mr-8"
+          color="FFFFFF"
+          variant="outline"
+          fontSize="16"
+          fontWeight="bold"
+        >
+          サレンダー
+        </Button>
+      </div>
     </>
   );
 }
