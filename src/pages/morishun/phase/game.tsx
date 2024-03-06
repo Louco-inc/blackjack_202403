@@ -15,7 +15,7 @@ type PropsType = {
 export default function GameComponent(props: PropsType): JSX.Element {
   const {
     playerData,
-    // bettingPoint,
+    bettingPoint,
     // betDoublePoint,
     // openTop,
     // onRetry,
@@ -61,8 +61,10 @@ export default function GameComponent(props: PropsType): JSX.Element {
   return (
     <>
       <div className="h-full relative text-white">
-        <div className="absolute top-0 right-0">
+        <div className="absolute top-0 right-0 grid justify-items-center">
           <div>ポイント</div>
+          <div>{playerData.point}P</div>
+          <div>Bet：{bettingPoint}P</div>
         </div>
         <div className="grid justify-items-center h-2/6">
           <div>ディーラー</div>
