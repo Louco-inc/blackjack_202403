@@ -25,6 +25,7 @@ export default function BlackJackPage(): JSX.Element {
   useEffect(() => {
     const init = async (): Promise<void> => {
       const uuid: string = getUUIDFromSessionStorage() ?? "";
+      console.log(uuid);
       if (uuid) {
         const headers = new Headers();
         headers.append("Authorization", uuid);
