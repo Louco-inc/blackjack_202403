@@ -39,13 +39,26 @@ export default function GameComponent(props: PropsType): JSX.Element {
     init();
   }, []);
 
+  // バースト判定処理
+  useEffect(() => {
+    const burst = (): void => {
+      if (cardNumberSum(playerHands) > 21) {
+        // TODO:画面描画よりも先にアラートが出てしまうので、やむなくsetTimeoutを使用。setTimeoutを使わずに、左記を実現できるように修正する。
+        setTimeout(() => {
+          alert("バースト");
+        }, 1000);
+      }
+    };
+    burst();
+  }, [playerHands]);
+
   // 点数計算処理
   /**
    * CardTypeの配列を引数で受けとり、number型の合計点数を返す
    * @param cards 手札のデータ
    */
   const cardNumberSum = (cards: CardType[]): number => {
-    const score = cards
+    const point = cards
       .map((card) => Number(card.rank))
       .reduce((total, num) => {
         // J、Q、Kは10点として加算する
@@ -55,7 +68,26 @@ export default function GameComponent(props: PropsType): JSX.Element {
         // 10以下のカードはそのまま加算
         return total + num;
       }, 0);
-    return score;
+    return point;
+  };
+
+  // ヒット処理
+  /**
+   * カードを１枚引く
+   * 合計点数を加算
+   * 合計点数が22点未満 → そのまま自陣にカードを表向きで１枚追加
+   * 合計点数が22点以上 → バースト処理
+   */
+  const hit = (): void => {
+    // カードを１枚引く
+    const pickedPlayerCard = pick(cardDeck, setCardDeck);
+    // const newPoint =
+    //   cardNumberSum(playerHands) + cardNumberSum([pickedPlayerCard]);
+    setPlayerHands((prev) => [...prev, pickedPlayerCard]);
+    // 合計点数が22点以上 → バースト処理
+    // if (newPoint > 22) {
+    //   alert("バースト");
+    // }
   };
 
   return (
@@ -75,7 +107,7 @@ export default function GameComponent(props: PropsType): JSX.Element {
               return (
                 <Image
                   key={hand.imageId}
-                  src={`/images/${hand.imageId}.png`}
+                  src={`/images/back-of-card.png`}
                   className="h-5/6"
                 />
               );
@@ -101,7 +133,7 @@ export default function GameComponent(props: PropsType): JSX.Element {
               colorScheme="white"
               variant="outline"
               size="lg"
-              onClick={() => {}}
+              onClick={hit}
             >
               <Text>ヒット</Text>
             </Button>
