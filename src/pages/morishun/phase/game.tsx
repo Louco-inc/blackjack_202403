@@ -1,7 +1,8 @@
 import { useEffect, useState } from "react";
-import { CardType, PlayerType } from "@/types";
-import { Button, HStack, Image, Text } from "@chakra-ui/react";
+import { CardType, PlayerType, ResultType } from "@/types";
+import { Button, HStack, Image, Text, useDisclosure } from "@chakra-ui/react";
 import { pick, useCardDeck } from "@/hooks/useCardDeck";
+import ResultModal from "../phase/ResultModal";
 
 type PropsType = {
   playerData: PlayerType;
@@ -24,6 +25,14 @@ export default function GameComponent(props: PropsType): JSX.Element {
   const [cardDeck, setCardDeck] = useState<CardType[]>(() => useCardDeck());
   const [playerHands, setPlayerHands] = useState<CardType[]>([]);
   const [dealerHands, setDealerHands] = useState<CardType[]>([]);
+  const [result, setResult] = useState<ResultType>("win");
+  const [playerPoint, setPlayerPoint] = useState<number>(0);
+  const [dealerPoint, setDealerPoint] = useState<number>(0);
+  const {
+    isOpen: isOpenResultModal,
+    onOpen: onOpenResultModal,
+    onClose: onCloseResultModal,
+  } = useDisclosure();
 
   // 初期表示
   useEffect(() => {
@@ -39,18 +48,43 @@ export default function GameComponent(props: PropsType): JSX.Element {
     init();
   }, []);
 
-  // バースト判定処理
+  // プレイヤーの手札が更新された際の処理
+  /**
+   * プレイヤーのポイントを設定
+   * プレイヤーのポイントが21点より大きくなってしまった場合、バースト処理実行
+   */
   useEffect(() => {
+    // プレイヤーの手札の合計点をステートで保持
+    setPlayerPoint(cardNumberSum(playerHands));
+    // バースト判定処理
+    /**
+     * 結果を「負け」に設定する
+     * 結果のモーダルを表示させる
+     */
     const burst = (): void => {
-      if (cardNumberSum(playerHands) > 21) {
-        // TODO:画面描画よりも先にアラートが出てしまうので、やむなくsetTimeoutを使用。setTimeoutを使わずに、左記を実現できるように修正する。
-        setTimeout(() => {
-          alert("バースト");
-        }, 1000);
-      }
+      // TODO:画面描画よりも先にアラートが出てしまうので、やむなくsetTimeoutを使用。setTimeoutを使わずに、左記を実現できるように修正する。
+      setTimeout(() => {
+        // 結果を「負け」に設定
+        setResult("lose");
+        // 結果のモーダルを表示
+        onOpenResultModal();
+      }, 1000);
     };
-    burst();
+    // 合計点数が21点より大きくなってしまった場合、バースト処理実行
+    if (cardNumberSum(playerHands) > 21) {
+      burst();
+    }
   }, [playerHands]);
+
+  // ディーラーの手札が更新された際の処理
+  /**
+   * ディーラーのポイントを設定
+   * 17点以上になった時点でスタンド
+   */
+  useEffect(() => {
+    // ディーラーの手札の合計点をステートで保持
+    setDealerPoint(cardNumberSum(dealerHands));
+  }, [dealerHands]);
 
   // 点数計算処理
   /**
@@ -81,13 +115,7 @@ export default function GameComponent(props: PropsType): JSX.Element {
   const hit = (): void => {
     // カードを１枚引く
     const pickedPlayerCard = pick(cardDeck, setCardDeck);
-    // const newPoint =
-    //   cardNumberSum(playerHands) + cardNumberSum([pickedPlayerCard]);
     setPlayerHands((prev) => [...prev, pickedPlayerCard]);
-    // 合計点数が22点以上 → バースト処理
-    // if (newPoint > 22) {
-    //   alert("バースト");
-    // }
   };
 
   return (
@@ -100,7 +128,7 @@ export default function GameComponent(props: PropsType): JSX.Element {
         </div>
         <div className="grid justify-items-center h-2/6">
           <div>ディーラー</div>
-          <div>ポイント：{cardNumberSum(dealerHands)}</div>
+          <div>ポイント：{dealerPoint}</div>
           <HStack className="h-4/5">
             {dealerHands.map((hand, i) => {
               console.dir(hand);
@@ -116,7 +144,7 @@ export default function GameComponent(props: PropsType): JSX.Element {
         </div>
         <div className="grid justify-items-center h-3/6">
           <div>{playerData.nickname}</div>
-          <div>ポイント：{cardNumberSum(playerHands)}</div>
+          <div>ポイント：{playerPoint}</div>
           <HStack>
             {playerHands.map((hand, i) => {
               console.dir(hand);
@@ -167,6 +195,16 @@ export default function GameComponent(props: PropsType): JSX.Element {
           </HStack>
         </div>
       </div>
+      <ResultModal
+        isOpen={isOpenResultModal}
+        onClose={onCloseResultModal}
+        playerData={playerData}
+        playerHands={playerHands}
+        playerPoint={playerPoint}
+        dealerHands={dealerHands}
+        dealerPoint={dealerPoint}
+        result={result}
+      />
     </>
   );
 }
