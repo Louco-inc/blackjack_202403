@@ -16,6 +16,7 @@ type PropsType = {
   isOpen: boolean;
   onClose: () => void;
   playerData: PlayerType;
+  bettingPoint: number;
   playerHands: CardType[];
   playerPoint: number;
   dealerHands: CardType[];
@@ -28,6 +29,7 @@ export default function ResultModal(props: PropsType): JSX.Element {
     isOpen,
     onClose,
     playerData,
+    bettingPoint,
     playerHands,
     playerPoint,
     dealerHands,
@@ -38,14 +40,14 @@ export default function ResultModal(props: PropsType): JSX.Element {
     <>
       <Modal isOpen={isOpen} onClose={onClose}>
         <ModalOverlay />
-        <ModalContent>
+        <ModalContent className="bg-main-color text-white border grid justify-items-center">
           <ModalHeader>
             <Image src={`/images/${result}.png`} />
           </ModalHeader>
           <ModalCloseButton />
           <ModalBody>
             <HStack>
-              <div className="w-1/2">
+              <div className="w-1/2 grid justify-items-center">
                 <div>{playerData.nickname}</div>
                 <HStack>
                   {playerHands.map((hand, i) => {
@@ -54,13 +56,14 @@ export default function ResultModal(props: PropsType): JSX.Element {
                       <Image
                         key={hand.imageId}
                         src={`/images/${hand.imageId}.png`}
+                        className="w-1/3"
                       />
                     );
                   })}
                 </HStack>
                 <div>{playerPoint}</div>
               </div>
-              <div className="w-1/2">
+              <div className="w-1/2 grid justify-items-center">
                 <div>ディーラー</div>
                 <HStack>
                   {dealerHands.map((hand, i) => {
@@ -69,6 +72,7 @@ export default function ResultModal(props: PropsType): JSX.Element {
                       <Image
                         key={hand.imageId}
                         src={`/images/${hand.imageId}.png`}
+                        className="w-1/3"
                       />
                     );
                   })}
@@ -76,13 +80,26 @@ export default function ResultModal(props: PropsType): JSX.Element {
                 <div>{dealerPoint}</div>
               </div>
             </HStack>
+            <div className="border-t"></div>
+            <HStack>
+              <div>ベットポイント</div>
+              <div>{bettingPoint}P</div>
+            </HStack>
+            <HStack>
+              <div>獲得ポイント</div>
+              <div>P</div>
+            </HStack>
+            <HStack>
+              <div>現在のポイント</div>
+              <div>P</div>
+            </HStack>
           </ModalBody>
 
           <ModalFooter>
-            <Button colorScheme="blue" mr={3} onClick={onClose}>
-              Close
+            <Button variant='outline' className="text-white" mr={3} onClick={onClose}>
+              TOPに戻る
             </Button>
-            <Button variant="ghost">Secondary Action</Button>
+            <Button colorScheme='yellow' className="text-white" variant='solid'>続ける</Button>
           </ModalFooter>
         </ModalContent>
       </Modal>

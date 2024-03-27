@@ -28,6 +28,7 @@ export default function GameComponent(props: PropsType): JSX.Element {
   const [result, setResult] = useState<ResultType>("win");
   const [playerPoint, setPlayerPoint] = useState<number>(0);
   const [dealerPoint, setDealerPoint] = useState<number>(0);
+  const [isDealerCardOpen, setIsDealerCardOpen] = useState<boolean>(false);
   const {
     isOpen: isOpenResultModal,
     onOpen: onOpenResultModal,
@@ -79,12 +80,22 @@ export default function GameComponent(props: PropsType): JSX.Element {
   // ディーラーの手札が更新された際の処理
   /**
    * ディーラーのポイントを設定
-   * 17点以上になった時点でスタンド
    */
   useEffect(() => {
     // ディーラーの手札の合計点をステートで保持
     setDealerPoint(cardNumberSum(dealerHands));
   }, [dealerHands]);
+
+  // ディーラーのポイントが更新された際の処理
+  /**
+   * 17点以上になった時点でスタンド
+   */
+  useEffect(() => {
+    // 17点以上の場合は、勝敗の判定をし、結果のモーダルを表示させる
+    if(dealerPoint >= 17){
+      resultSet();
+    }
+  }, [dealerPoint]);
 
   // 点数計算処理
   /**
@@ -118,6 +129,39 @@ export default function GameComponent(props: PropsType): JSX.Element {
     setPlayerHands((prev) => [...prev, pickedPlayerCard]);
   };
 
+  // スタンド処理
+  const stand = (): void => {
+    // ディーラーのポイントが17点以上になるまで1枚引き続ける
+    let currentDealerPoint: number = cardNumberSum(dealerHands);
+    const currentDealerHands: CardType[] = dealerHands;
+    while (currentDealerPoint < 17) {
+      const pickedDealerCard = pick(cardDeck, setCardDeck);
+      currentDealerHands.push(pickedDealerCard);
+      currentDealerPoint = cardNumberSum(currentDealerHands);
+      console.log(currentDealerPoint);
+    }
+    setDealerHands(currentDealerHands);
+    // ディーラーのカードをオープン
+    setIsDealerCardOpen(true);
+  };
+
+  // 結果のセット
+  const resultSet = (): void => {
+    // 勝敗の設定
+    if (dealerPoint > 21 || playerPoint > dealerPoint) {
+      setResult("win");
+    } else if (playerPoint === dealerPoint) {
+      setResult("draw");
+    } else {
+      setResult("lose");
+    }
+    // 結果のモーダルを表示
+    // TODO:画面描画よりも先にアラートが出てしまうので、やむなくsetTimeoutを使用。setTimeoutを使わずに、左記を実現できるように修正する。
+    setTimeout(() => {
+      onOpenResultModal();
+    }, 1000);
+  };
+
   return (
     <>
       <div className="h-full relative text-white">
@@ -133,11 +177,16 @@ export default function GameComponent(props: PropsType): JSX.Element {
             {dealerHands.map((hand, i) => {
               console.dir(hand);
               return (
-                <Image
-                  key={hand.imageId}
-                  src={`/images/back-of-card.png`}
-                  className="h-5/6"
-                />
+                <div key={hand.imageId} className="h-full">
+                  {isDealerCardOpen ? (
+                    <Image
+                      src={`/images/${hand.imageId}.png`}
+                      className="h-5/6"
+                    />
+                  ) : (
+                    <Image src={`/images/back-of-card.png`} className="h-5/6" />
+                  )}
+                </div>
               );
             })}
           </HStack>
@@ -179,7 +228,7 @@ export default function GameComponent(props: PropsType): JSX.Element {
               colorScheme="white"
               variant="outline"
               size="lg"
-              onClick={() => {}}
+              onClick={stand}
             >
               <Text>スタンド</Text>
             </Button>
@@ -199,6 +248,7 @@ export default function GameComponent(props: PropsType): JSX.Element {
         isOpen={isOpenResultModal}
         onClose={onCloseResultModal}
         playerData={playerData}
+        bettingPoint={bettingPoint}
         playerHands={playerHands}
         playerPoint={playerPoint}
         dealerHands={dealerHands}
