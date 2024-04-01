@@ -23,6 +23,11 @@ export default function GameComponent(props: PropsType): JSX.Element {
     init();
   });
 
+  //hitの関数作成
+  //doubleの関数作成
+  //standの関数作成
+  //surrenderの関数作成
+
   return (
     <>
       <div></div>
